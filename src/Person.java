@@ -4,8 +4,14 @@ public class Person
 {
     private String name;
     private String surname;
-    private Date birthDate;
     private String email;
+
+    public Person(String name, String surname, String email)
+    {
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+    }
 
     public String getName()
     {
@@ -20,16 +26,6 @@ public class Person
     public void setSurname(String surname)
     {
         this.surname = surname;
-    }
-
-    public Date getBirthDate()
-    {
-        return birthDate;
-    }
-
-    public void setBirthDate(Date birthDate)
-    {
-        this.birthDate = birthDate;
     }
 
     public String getEmail()

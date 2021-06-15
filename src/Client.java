@@ -43,7 +43,9 @@ import java.util.Scanner;
 
                     switch (choice)
                     {
+                        //LOGIN code
                         case 1:
+                            //To be completed
                             msg_to_send = menuLogin();
                             to_server.println(msg_to_send);
                             to_server.flush();
@@ -58,11 +60,39 @@ import java.util.Scanner;
                                 System.out.println("Logged in");
                                 menu();
                             }
+                            else
+                            {
+                                System.out.println("An error occurred...\nTry again!");
+                            }
                             System.out.println("\n\n");
                             break;
+
+                        //SIGNUP code
                         case 2:
+                            msg_to_send = menuSignUp();
+                            to_server.println(msg_to_send);
+                            to_server.flush();
+                            System.out.println("\n\n");
+                            msg_received = from_server.nextLine();
+
+                            if (msg_received.equals("SIGNED_UP"))
+                            {
+                                System.out.println("Signed Up!");
+                                System.out.println("Now you can login");
+                            }
+                            else if (msg_received.equals("USER_ALREADY_EXISTS"))
+                            {
+                                System.out.println("This username is not available");
+                                System.out.println("Please choose another username");
+                            }
+                            else
+                            {
+                                System.out.println("An error occurred...\nTry again!");
+                            }
                             System.out.println("\n\n");
                             break;
+
+                        //QUIT code
                         case 0:
                             done = true;
                             to_server.println("QUIT");
@@ -70,6 +100,7 @@ import java.util.Scanner;
                             client_socket.close();
                             System.out.println("Quitting...\n");
                             break;
+
                         default:
                             System.out.println("Invalid choice!!\n\n");
                     }
@@ -107,6 +138,25 @@ import java.util.Scanner;
             System.out.println("Insert username: ");
             msg.append(in.nextLine()+" ");
             System.out.println("Insert password: ");
+            msg.append(in.nextLine());
+
+            return msg.toString();
+        }
+
+        public String menuSignUp()
+        {
+            StringBuilder msg = new StringBuilder();
+            msg.append("SIGNUP ");
+            Scanner in = new Scanner(System.in);
+            System.out.println("Insert username: ");
+            msg.append(in.nextLine()+" ");
+            System.out.println("Insert password: ");
+            msg.append(in.nextLine()+" ");
+            System.out.println("Insert name: ");
+            msg.append(in.nextLine()+" ");
+            System.out.println("Insert surname: ");
+            msg.append(in.nextLine()+" ");
+            System.out.println("Insert email: ");
             msg.append(in.nextLine());
 
             return msg.toString();

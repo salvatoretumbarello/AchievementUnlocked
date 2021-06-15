@@ -1,4 +1,5 @@
 import java.util.HashSet;
+import java.util.Objects;
 
 public class User
 {
@@ -6,6 +7,22 @@ public class User
     private String password;
     private Person information;
     private HashSet<Videogame> library = new HashSet<>();
+
+    public Person getInformation()
+    {
+        return information;
+    }
+
+    public void setInformation(Person information)
+    {
+        this.information = information;
+    }
+
+    public User(String u, String p)
+    {
+        this.username = u;
+        this.password = p;
+    }
 
     public String getUsername()
     {
@@ -27,4 +44,11 @@ public class User
         this.password = password;
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        User user = (User) o;
+        return Objects.equals(username, user.username) &&
+                Objects.equals(password, user.password);
+    }
 }
