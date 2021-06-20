@@ -12,12 +12,20 @@ public class Server
 
     public Server(int starting_port)
     {
-        //For now I create a new empty archive...
         archive = new UserArchive();
 
         this.port = starting_port;
         System.out.println("Created server on port "+port);
     }
+
+    public Server(int starting_port, UserArchive archive)
+    {
+        this.archive = archive;
+
+        this.port = starting_port;
+        System.out.println("Created server on port "+port);
+    }
+
 
     public void start()
     {

@@ -4,6 +4,13 @@ public class Game
     protected String description;
     protected int rating; //The minimum age suggested for the play
 
+    public Game(String title, String description, int rating)
+    {
+        this.title = title;
+        this.description = description;
+        this.rating = rating;
+    }
+
     public String getTitle()
     {
         return title;

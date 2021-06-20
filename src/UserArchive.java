@@ -14,8 +14,8 @@ public class UserArchive
         return null;
     }
 
-    public void add(User user_signup)
+    public void add(User user)
     {
-        users.add(user_signup);
+        users.add(user);
     }
 }

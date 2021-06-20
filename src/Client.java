@@ -58,7 +58,12 @@ import java.util.Scanner;
                             else if (msg_received.equals("LOGGED_IN"))
                             {
                                 System.out.println("Logged in");
-                                menu();
+                                System.out.println("Recovering your information");
+
+                                User current_user = loadUserFromServer();
+
+                                System.out.println("Loaded: "+current_user);
+
                             }
                             else
                             {
@@ -125,12 +130,68 @@ import java.util.Scanner;
             }
         }
 
-        public void menu()
+        private User loadUserFromServer() throws IOException
+        {
+            Scanner from_server = new Scanner(client_socket.getInputStream());
+
+            String[] info = new String[5]; int i_info; boolean b_info;
+            User u; Person p; Videogame v; Achievement a; Platform pf;
+
+            info[0] = from_server.nextLine(); //username
+            info[1] = from_server.nextLine(); //password
+            info[2] = from_server.nextLine(); //name
+            info[3] = from_server.nextLine(); //surname
+            info[4] = from_server.nextLine(); //email
+
+            u = new User(info[0], info[1]);
+            p = new Person(info[2], info[3], info[4]);
+            u.setInformation(p);
+
+            while (true)
+            {
+                info[0] = from_server.nextLine(); //title or message that ends the stream
+                if (info[0].equals("END_VIDEOGAMES")) break;
+                info[1] = from_server.nextLine(); //description
+                i_info = from_server.nextInt(); //rating
+                info[2] = from_server.nextLine(); //softwareHouse
+
+                v = new Videogame(info[0], info[1], i_info, info[2]);
+                u.addVideogame(v);
+
+                while (true)
+                {
+                    info[0] = from_server.nextLine(); //name or message that ends the stream
+                    if (info[0].equals("END_PLATFORMS")) break;
+                    info[1] = from_server.nextLine(); //company
+                    i_info = from_server.nextInt(); //releaseYear
+
+                    pf = new Platform(info[0], info[1], i_info);
+                    v.addPlatform(pf);
+
+                }
+
+                while (true)
+                {
+                    info[0] = from_server.nextLine(); //name or message that ends the stream
+                    if (info[0].equals("END ACHIEVEMENTS")) break;
+                    info[1] = from_server.nextLine(); //name of the videogame
+                    b_info = from_server.hasNextBoolean(); //unlocked
+                    info[2] = from_server.nextLine(); //description
+
+                    a = new Achievement(info[0], info[1], b_info, info[2]);
+                    v.addAchievement(a);
+
+                }
+            }
+            return u;
+        }
+
+        private void menuStart(User user)
         {
             //Here will be implemented another menu
         }
 
-        public String menuLogin()
+        private String menuLogin()
         {
             StringBuilder msg = new StringBuilder();
             msg.append("LOGIN ");
@@ -143,7 +204,7 @@ import java.util.Scanner;
             return msg.toString();
         }
 
-        public String menuSignUp()
+        private String menuSignUp()
         {
             StringBuilder msg = new StringBuilder();
             msg.append("SIGNUP ");

@@ -50,8 +50,11 @@ public class ClientManager implements Runnable
                     {
                         to_client.println("LOGGED_IN");
                         to_client.flush();
+                        System.out.println("Sending user informations: "+user_login);
 
-                        //Here will be implements the passage of all information to client
+                        sendUserToClient(user_login);
+
+                        System.out.println("Sending complete");
                     }
                 }
                 else if (command.equals("SIGNUP"))
@@ -59,7 +62,6 @@ public class ClientManager implements Runnable
                     String username = message_scanner.next();
                     String password = message_scanner.next();
 
-                    //Checking if username is already used
                     User user_signup = new User(username, password);
                     User tmp = archive.findUser(user_signup);
 
@@ -99,5 +101,44 @@ public class ClientManager implements Runnable
             System.out.println("Input/Output error!!\n\n");
             e.printStackTrace();
         }
+    }
+
+    private void sendUserToClient(User user_login) throws IOException
+    {
+        var to_client = new PrintWriter(assigned_socket.getOutputStream());
+
+        to_client.println(user_login.getUsername());
+        to_client.println(user_login.getPassword());
+        to_client.println(user_login.printPerson());
+
+        for(Videogame vg : user_login.getLibrary())
+        {
+            to_client.println(vg.getTitle());
+            to_client.println(vg.getDescription());
+            to_client.println(vg.getRating());
+            to_client.println(vg.getSoftwareHouse());
+
+            for(Platform pf : vg.getPlatformList())
+            {
+                if (vg.getPlatformList().isEmpty()) break;
+                to_client.println(pf.getName());
+                to_client.println(pf.getCompany());
+                to_client.println(pf.getReleaseYear());
+            }
+            to_client.println("END_PLATFORMS");
+
+            for(Achievement a : vg.getAchievements())
+            {
+                if (vg.getAchievements().isEmpty()) break;
+                to_client.println(a.getName());
+                to_client.println(a.getVideogame_name());
+                to_client.println(a.isUnlocked());
+                to_client.println(a.getDescription());
+            }
+            to_client.println("END_ACHIEVEMENTS");
+        }
+        to_client.println("END_VIDEOGAMES");
+        to_client.flush();
+
     }
 }

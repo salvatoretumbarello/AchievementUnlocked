@@ -8,6 +8,12 @@ public class User
     private Person information;
     private HashSet<Videogame> library = new HashSet<>();
 
+    public User(String u, String p)
+    {
+        this.username = u;
+        this.password = p;
+    }
+
     public Person getInformation()
     {
         return information;
@@ -18,10 +24,9 @@ public class User
         this.information = information;
     }
 
-    public User(String u, String p)
+    public HashSet<Videogame> getLibrary()
     {
-        this.username = u;
-        this.password = p;
+        return library;
     }
 
     public String getUsername()
@@ -50,5 +55,27 @@ public class User
         User user = (User) o;
         return Objects.equals(username, user.username) &&
                 Objects.equals(password, user.password);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", information=" + information +
+                ", library=" + library +
+                '}';
+    }
+
+    public String printPerson()
+    {
+        return information.getName() + "\n" +
+                information.getSurname() +"\n" +
+                information.getEmail();
+    }
+
+    public void addVideogame(Videogame videogame)
+    {
+        library.add(videogame);
     }
 }

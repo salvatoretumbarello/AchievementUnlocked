@@ -1,13 +1,27 @@
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 
 public class Videogame extends Game
 {
     private String softwareHouse;
-    private Date releaseDate;
     private ArrayList<Platform> platformList = new ArrayList<>();
     private HashSet<Achievement> achievements = new HashSet<>();
+
+    public Videogame(String title, String description, int rating, String softwareHouse)
+    {
+        super(title, description, rating);
+        this.softwareHouse = softwareHouse;
+    }
+
+    public ArrayList<Platform> getPlatformList()
+    {
+        return platformList;
+    }
+
+    public HashSet<Achievement> getAchievements()
+    {
+        return achievements;
+    }
 
     public String getSoftwareHouse()
     {
@@ -19,12 +33,25 @@ public class Videogame extends Game
         this.softwareHouse = softwareHouse;
     }
 
-    public Date getReleaseDate() {
-        return releaseDate;
+    @Override
+    public String toString() {
+        return "Videogame{" +
+                "title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", rating=" + rating +
+                ", softwareHouse='" + softwareHouse + '\'' +
+                ", platformList=" + platformList +
+                ", achievements=" + achievements +
+                '}';
     }
 
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = releaseDate;
+    public void addPlatform(Platform platform)
+    {
+        platformList.add(platform);
     }
 
+    public void addAchievement(Achievement achievement)
+    {
+        achievements.add(achievement);
+    }
 }
