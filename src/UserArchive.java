@@ -1,8 +1,14 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class UserArchive
 {
     ArrayList<User> users = new ArrayList<>();
+
+    public void add(User user)
+    {
+        users.add(user);
+    }
 
     public User findUser(User someuser)
     {
@@ -14,8 +20,14 @@ public class UserArchive
         return null;
     }
 
-    public void add(User user)
+    public Videogame findVideogame(String title)
     {
-        users.add(user);
+        Videogame vg = null;
+        for(User user : users)
+        {
+            vg = user.findVideogame(title);
+            if (vg != null) break;
+        }
+        return vg;
     }
 }

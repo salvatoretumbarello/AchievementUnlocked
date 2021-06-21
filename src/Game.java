@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Game
 {
     protected String title;
@@ -39,5 +41,20 @@ public class Game
     public void setRating(int rating)
     {
         this.rating = rating;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Game game = (Game) o;
+        return Objects.equals(title, game.title);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(title);
     }
 }

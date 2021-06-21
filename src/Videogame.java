@@ -34,6 +34,12 @@ public class Videogame extends Game
     }
 
     @Override
+    public boolean equals(Object o)
+    {
+        return super.equals(o);
+    }
+
+    @Override
     public String toString() {
         return "Videogame{" +
                 "title='" + title + '\'' +
