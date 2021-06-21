@@ -78,14 +78,4 @@ public class User
     {
         library.add(videogame);
     }
-
-    public Videogame findVideogame(String title)
-    {
-        for(Videogame vg : library)
-        {
-            if(vg.getTitle().equalsIgnoreCase(title))
-                return vg;
-        }
-        return null;
-    }
 }
