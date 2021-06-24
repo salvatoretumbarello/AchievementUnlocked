@@ -42,9 +42,9 @@ public class Videogame extends Game
     @Override
     public String toString() {
         return "Videogame{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", rating=" + rating +
+                "title='" + this.getTitle() + '\'' +
+                ", description='" + this.getDescription() + '\'' +
+                ", rating=" + this.getRating() +
                 ", softwareHouse='" + softwareHouse + '\'' +
                 ", platformList=" + platformList +
                 ", achievements=" + achievements +

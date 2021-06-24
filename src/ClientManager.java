@@ -1,13 +1,14 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class ClientManager implements Runnable
 {
     Socket assigned_socket;
     UserArchive archive;
+    User current_user;
 
     public ClientManager(Socket client_socket, UserArchive archive)
     {
@@ -28,71 +29,97 @@ public class ClientManager implements Runnable
 
             while (!done)
             {
+                String username, password;
+                User user_tmp; Videogame vg_tmp;
                 msg_from_client = from_client.nextLine();
                 System.out.println("Received message: " + msg_from_client + " from client " + assigned_socket.getRemoteSocketAddress());
                 Scanner message_scanner = new Scanner(msg_from_client);
                 String command = message_scanner.next();
 
-                if (command.equals("LOGIN"))
+                switch (command)
                 {
-                    String username = message_scanner.next();
-                    String password = message_scanner.next();
+                    case "LOGIN":
+                        username = message_scanner.next();
+                        password = message_scanner.next();
 
-                    User tmp = new User(username, password);
-                    User user_login = archive.findUser(tmp);
+                        user_tmp = new User(username, password);
+                        current_user = archive.findUser(user_tmp);
 
-                    if (user_login == null)
-                    {
-                        to_client.println("INVALID_LOGIN");
-                        to_client.flush();
-                    }
-                    else
-                    {
-                        to_client.println("LOGGED_IN");
-                        to_client.flush();
-                        System.out.println("Sending user informations: "+user_login);
+                        if (current_user == null)
+                        {
+                            to_client.println("INVALID_LOGIN");
+                            to_client.flush();
+                        }
+                        else
+                        {
+                            to_client.println("LOGGED_IN");
+                            to_client.flush();
+                            System.out.println("Sending user informations: " + current_user);
 
-                        sendUserToClient(user_login);
+                            sendUserToClient(current_user);
 
-                        System.out.println("Sending complete");
-                    }
-                }
-                else if (command.equals("SIGNUP"))
-                {
-                    String username = message_scanner.next();
-                    String password = message_scanner.next();
+                            System.out.println("Sending complete");
+                        }
+                        break;
 
-                    User user_signup = new User(username, password);
-                    User tmp = archive.findUser(user_signup);
+                    case "SIGNUP":
+                        username = message_scanner.next();
+                        password = message_scanner.next();
 
-                    if(tmp == null)
-                    {
-                        String name = message_scanner.next();
-                        String surname = message_scanner.next();
-                        String email = message_scanner.next();
-                        Person p_signed = new Person(name, surname, email);
-                        user_signup.setInformation(p_signed);
-                        archive.add(user_signup);
+                        User user_signup = new User(username, password);
+                        user_tmp = archive.findUser(user_signup);
 
-                        to_client.println("SIGNED_UP");
-                        to_client.flush();
-                    }
-                    else
-                    {
-                        to_client.println("USER_ALREADY_EXISTS");
-                        to_client.flush();
-                    }
+                        if (user_tmp == null)
+                        {
+                            String name = message_scanner.next();
+                            String surname = message_scanner.next();
+                            String email = message_scanner.next();
+                            Person p_signed = new Person(name, surname, email);
+                            user_signup.setInformation(p_signed);
+                            archive.add(user_signup);
 
-                }
-                else if (command.equals("QUIT"))
-                {
-                    done = true;
-                    System.out.println("Client " + assigned_socket.getRemoteSocketAddress() + " quitted");
-                    assigned_socket.close();
-                }
-                else
-                {
-                    System.out.println("Not valid command received " + command + "");
+                            to_client.println("SIGNED_UP");
+                            to_client.flush();
+                        }
+                        else
+                        {
+                            to_client.println("USER_ALREADY_EXISTS");
+                            to_client.flush();
+                        }
+
+                        break;
+
+                    case "SEARCH_VIDEOGAME":
+                        String title = from_client.nextLine();
+                        vg_tmp = archive.findVideogame(title);
+                        if (vg_tmp == null)
+                        {
+                            to_client.println("VIDEOGAME_NOT_FOUND");
+                            to_client.flush();
+                            System.out.println(title+" not found.");
+                        }
+                        else
+                        {
+                            to_client.println("VIDEOGAME_FOUND");
+                            to_client.flush();
+                            sendVideogameToClient(vg_tmp);
+                            System.out.println(title+" found.");
+                        }
+                        current_user = updateUserInfo();
+                        archive.updateUser(current_user);
+                        System.out.println("Updated: ");
+                        System.out.println(current_user);
+                        break;
+
+                    case "QUIT":
+                        done = true;
+                        System.out.println("Client " + assigned_socket.getRemoteSocketAddress() + " quitted");
+                        assigned_socket.close();
+                        break;
+
+                    default:
+                        System.out.println("Not valid command received " + command + "");
+                        break;
                 }
             }
         }
@@ -101,8 +128,14 @@ public class ClientManager implements Runnable
             System.out.println("Input/Output error!!\n\n");
             e.printStackTrace();
         }
+        catch (NoSuchElementException e)
+        {
+            System.out.println("Scanner error!!\n\n");
+            e.printStackTrace();
+        }
     }
 
+    //Send all user information to client which is logged
     private void sendUserToClient(User user_login) throws IOException
     {
         var to_client = new PrintWriter(assigned_socket.getOutputStream());
@@ -120,7 +153,6 @@ public class ClientManager implements Runnable
 
             for(Platform pf : vg.getPlatformList())
             {
-                if (vg.getPlatformList().isEmpty()) break;
                 to_client.println(pf.getName());
                 to_client.println(pf.getCompany());
                 to_client.println(pf.getReleaseYear());
@@ -129,7 +161,6 @@ public class ClientManager implements Runnable
 
             for(Achievement a : vg.getAchievements())
             {
-                if (vg.getAchievements().isEmpty()) break;
                 to_client.println(a.getName());
                 to_client.println(a.getVideogame_name());
                 to_client.println(a.isUnlocked());
@@ -139,6 +170,91 @@ public class ClientManager implements Runnable
         }
         to_client.println("END_VIDEOGAMES");
         to_client.flush();
+    }
 
+
+    //update user every time a videogame is added to library or an achievement has been unclocked
+    private User updateUserInfo() throws IOException
+    {
+        Scanner from_client = new Scanner(assigned_socket.getInputStream());
+
+        String[] info = new String[5]; int i_info; boolean b_info;
+        User u; Person p; Videogame v; Achievement a; Platform pf;
+
+        info[0] = from_client.nextLine(); //username
+        info[1] = from_client.nextLine(); //password
+        info[2] = from_client.nextLine(); //name
+        info[3] = from_client.nextLine(); //surname
+        info[4] = from_client.nextLine(); //email
+
+        u = new User(info[0], info[1]);
+        p = new Person(info[2], info[3], info[4]);
+        u.setInformation(p);
+
+        while (true)
+        {
+            info[0] = from_client.nextLine(); //title or message that ends the stream
+            if (info[0].equals("END_VIDEOGAMES")) break;
+            info[1] = from_client.nextLine(); //description
+            i_info = Integer.parseInt(from_client.nextLine()); //rating
+            info[2] = from_client.nextLine(); //softwareHouse
+
+            v = new Videogame(info[0], info[1], i_info, info[2]);
+            u.addVideogame(v);
+
+            while (true)
+            {
+                info[0] = from_client.nextLine(); //name or message that ends the stream
+                if (info[0].equals("END_PLATFORMS")) break;
+                info[1] = from_client.nextLine(); //company
+                i_info = Integer.parseInt(from_client.nextLine()); //releaseYear
+
+                pf = new Platform(info[0], info[1], i_info);
+                v.addPlatform(pf);
+
+            }
+
+            while (true)
+            {
+                info[0] = from_client.nextLine(); //name or message that ends the stream
+                if (info[0].equals("END_ACHIEVEMENTS")) break;
+                info[1] = from_client.nextLine(); //name of the videogame
+                b_info = Boolean.parseBoolean(from_client.nextLine()); //unlocked
+                info[2] = from_client.nextLine(); //description
+
+                a = new Achievement(info[0], info[1], b_info, info[2]);
+                v.addAchievement(a);
+
+            }
+        }
+        return u;
+    }
+
+    //Send a videogame to a user for add it on library (achievement locked)
+    private void sendVideogameToClient(Videogame videogame) throws IOException
+    {
+        var to_client = new PrintWriter(assigned_socket.getOutputStream());
+
+        to_client.println(videogame.getTitle());
+        to_client.println(videogame.getDescription());
+        to_client.println(videogame.getRating());
+        to_client.println(videogame.getSoftwareHouse());
+
+        for(Platform pf : videogame.getPlatformList())
+        {
+            to_client.println(pf.getName());
+            to_client.println(pf.getCompany());
+            to_client.println(pf.getReleaseYear());
+        }
+        to_client.println("END_PLATFORMS");
+
+        for(Achievement a : videogame.getAchievements())
+        {
+            to_client.println(a.getName());
+            to_client.println(a.getVideogame_name());
+            to_client.println(a.getDescription());
+        }
+        to_client.println("END_ACHIEVEMENTS");
+        to_client.flush();
     }
 }

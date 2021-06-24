@@ -10,6 +10,12 @@ public class UserArchive
         users.add(user);
     }
 
+    public void updateUser(User user)
+    {
+        users.remove(user);
+        users.add(user);
+    }
+
     public User findUser(User someuser)
     {
         for (User user : users)
@@ -22,12 +28,14 @@ public class UserArchive
 
     public Videogame findVideogame(String title)
     {
-        Videogame vg = null;
         for(User user : users)
         {
-            vg = user.findVideogame(title);
-            if (vg != null) break;
+            for(Videogame tmp : user.getLibrary())
+            {
+                if (tmp.getTitle().equalsIgnoreCase(title))
+                    return tmp;
+            }
         }
-        return vg;
+        return null;
     }
 }

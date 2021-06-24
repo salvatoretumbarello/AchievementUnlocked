@@ -2,9 +2,9 @@ import java.util.Objects;
 
 public class Game
 {
-    protected String title;
-    protected String description;
-    protected int rating; //The minimum age suggested for the play
+    private String title;
+    private String description;
+    private int rating; //The minimum age suggested for the play
 
     public Game(String title, String description, int rating)
     {
