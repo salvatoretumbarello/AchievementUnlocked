@@ -151,19 +151,31 @@ public class Client
             {
                 int choice;
                 System.out.println();
+                for (int i = 0; i < 5; i++)
+                {
+                    Thread.sleep(1000);
+                    System.out.print(". ");
+                }
+                System.out.println("\n");
                 System.out.println("_____ACHIEVEMENT_UNLOCKED_____");
-                System.out.println("\nWelcome " + current_user.getUsername() + "!\n");
-                System.out.println("1) Add a new videogame to library");
-                System.out.println("2) unlock achievements");
-                System.out.println("0) log out");
+                System.out.println("\nWelcome " + current_user.getUsername() + "!!\n");
+                System.out.println("1) Add a new videogame to your library");
+                System.out.println("2) Unlock achievements");
+                System.out.println("3) Show your library");
+                System.out.println("4) Show report");
+                System.out.println("5) Save changes");
+                System.out.println("0) Log out");
                 System.out.println(">>>");
                 choice = from_user.nextInt();
                 from_user.nextLine(); //Enter
 
-                switch (choice) {
+                switch (choice)
+                {
+                    //ADD VIDEOGAME TO LIBRARY
                     case 1:
                         System.out.println("Insert title: ");
                         msg_to_send = from_user.nextLine();
+                        String title = msg_to_send;
                         to_server.println("SEARCH_VIDEOGAME \n"+msg_to_send);
                         to_server.flush();
                         msg_received = from_server.nextLine();
@@ -179,7 +191,7 @@ public class Client
                             System.out.println("Videogame not found on server...");
                             System.out.println("Please add all information about it");
                             System.out.println();
-                            Videogame vg = menuAddVideogame(current_user);
+                            Videogame vg = menuAddVideogame(current_user, title);
                             current_user.addVideogame(vg);
                             System.out.println("Added videogame:\n"+vg);
                         }
@@ -187,10 +199,73 @@ public class Client
                         {
                             System.out.println("An error occurred...\nTry again!");
                         }
+                        break;
+
+                    //UNLOCK ACHIEVEMENTS
+                    case 2:
+                        System.out.println();
+                        System.out.println("Videogame on your library: ");
+                        PrintVideogames();
+                        System.out.println();
+                        System.out.println("Insert Videogame title: ");
+                        title = from_user.nextLine();
+                        Videogame vg = current_user.findVideogame(title);
+                        if(vg == null)
+                        {
+                            System.out.println("Videogame not found in your library...");
+                            break;
+                        }
+                        else
+                        {
+                            while(true)
+                            {
+                                System.out.println();
+                                System.out.println("Achiements for " + vg.getTitle() + ": ");
+                                printAchievements(vg);
+                                System.out.println();
+                                System.out.println("Insert name of achievement to unlock or \"0\" to quit: ");
+                                String a_name = from_user.nextLine();
+                                if (a_name.equals("0")) break;
+                                Achievement ac = current_user.findAchievement(vg, a_name);
+                                if (ac == null)
+                                {
+                                    System.out.println("\nAchievement not found..");
+                                }
+                                else
+                                {
+                                    if (ac.isUnlocked())
+                                        System.out.println("\nAchievement already unlocked");
+                                    else
+                                    {
+                                        ac.setUnlocked(true);
+                                        current_user.updateAchievement(ac, vg);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+
+                    //SHOW LIBRARY
+                    case 3:
+                        System.out.println();
+                        System.out.println(current_user.printLibrary());
+                        System.out.println();
+                        break;
+
+                    //SHOW REPORT
+                    case 4:
+                        break;
+
+                    //SAVE CHANGES
+                    case 5:
+                        to_server.println("UPDATE_INFORMATION");
+                        to_server.flush();
                         updateUserInfo();
+                        System.out.println("Changes saved..\n");
                         System.out.println(current_user);
                         break;
 
+                    //LOG OUT
                     case 0:
                         done = true;
                         break;
@@ -226,10 +301,15 @@ public class Client
             e.printStackTrace();
             System.exit(1);
         }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
 
     }
 
     //Load all information of the user that is logged in
+
     private User loadUserFromServer() throws IOException
     {
         Scanner from_server = new Scanner(client_socket.getInputStream());
@@ -285,7 +365,6 @@ public class Client
         }
         return u;
     }
-
     private String menuLogin()
     {
         StringBuilder msg = new StringBuilder();
@@ -318,7 +397,7 @@ public class Client
         return msg.toString();
     }
 
-    //update user every time a videogame is added to library or an achievement has been unclocked
+    //Send the user information from the client after a command on the menuStart() of the Client
     private void updateUserInfo() throws IOException
     {
         var to_server = new PrintWriter(client_socket.getOutputStream());
@@ -399,15 +478,14 @@ public class Client
         return v;
     }
 
-    private Videogame menuAddVideogame(User user)
+    private Videogame menuAddVideogame(User user, String title)
     {
         String info[] = new String[3];
         int i_info; boolean b_info;
         Videogame vg;
         Scanner from_user = new Scanner(System.in);
 
-        System.out.println("Insert title: ");
-        info[0] = from_user.nextLine();
+        info[0] = title;
         System.out.println("Insert description: ");
         info[1] = from_user.nextLine();
         System.out.println("Insert rating: ");
@@ -439,7 +517,7 @@ public class Client
             if (info[0].equals("0")) break;
             System.out.println("Insert achievement description: ");
             info[1] = from_user.nextLine();
-            System.out.println("Insert '1' to unlock (other commands left it locked): ");
+            System.out.println("Insert '1' to unlock ('0' or others left it locked): ");
             i_info = from_user.nextInt();
             from_user.nextLine(); //Enter
             if (i_info == 1) b_info = true;
@@ -449,4 +527,24 @@ public class Client
         }
         return vg;
     }
+
+    private void PrintVideogames()
+    {
+        for(Videogame vg :current_user.getLibrary())
+            System.out.println(vg.getTitle());
+    }
+
+    private void printAchievements(Videogame vg)
+    {
+        for(Achievement ac : vg.getAchievements())
+        {
+            if (ac.isUnlocked())
+                System.out.println("\n[Unlocked] " + ac.getName());
+            else
+                System.out.println("\n[Locked] " + ac.getName());
+
+        }
+
+    }
+
 }

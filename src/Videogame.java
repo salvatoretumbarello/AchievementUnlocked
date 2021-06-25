@@ -13,6 +13,11 @@ public class Videogame extends Game
         this.softwareHouse = softwareHouse;
     }
 
+    public Videogame(String title)
+    {
+        super(title);
+    }
+
     public ArrayList<Platform> getPlatformList()
     {
         return platformList;
@@ -31,12 +36,6 @@ public class Videogame extends Game
     public void setSoftwareHouse(String softwareHouse)
     {
         this.softwareHouse = softwareHouse;
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        return super.equals(o);
     }
 
     @Override

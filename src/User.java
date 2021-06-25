@@ -67,6 +67,11 @@ public class User
                 '}';
     }
 
+    public void addVideogame(Videogame videogame)
+    {
+        library.add(videogame);
+    }
+
     public String printPerson()
     {
         return information.getName() + "\n" +
@@ -74,8 +79,41 @@ public class User
                 information.getEmail();
     }
 
-    public void addVideogame(Videogame videogame)
+    public String printLibrary()
     {
-        library.add(videogame);
+        StringBuilder str = new StringBuilder();
+        for (Videogame tmp : library) str.append(tmp);
+        return str.toString();
+    }
+
+    public Videogame findVideogame(String title)
+    {
+        for(Videogame vg : library)
+        {
+            if (vg.getTitle().equalsIgnoreCase(title))
+                return vg;
+        }
+        return null;
+    }
+
+    public Achievement findAchievement(Videogame vg, String a_name)
+    {
+        for (Videogame tmp : library)
+        {
+            if (tmp.equals(vg))
+                for (Achievement ac : tmp.getAchievements())
+                    if (ac.getName().equalsIgnoreCase(a_name)) return ac;
+        }
+        return null;
+    }
+
+    public void updateAchievement(Achievement ac, Videogame vg)
+    {
+        for(Videogame tmp : library)
+            if(tmp.equals(vg))
+            {
+                tmp.getAchievements().remove(ac);
+                tmp.getAchievements().add(ac);
+            }
     }
 }

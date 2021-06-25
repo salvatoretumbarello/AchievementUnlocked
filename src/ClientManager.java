@@ -105,6 +105,9 @@ public class ClientManager implements Runnable
                             sendVideogameToClient(vg_tmp);
                             System.out.println(title+" found.");
                         }
+                        break;
+
+                    case "UPDATE_INFORMATION":
                         current_user = updateUserInfo();
                         archive.updateUser(current_user);
                         System.out.println("Updated: ");
@@ -173,7 +176,7 @@ public class ClientManager implements Runnable
     }
 
 
-    //update user every time a videogame is added to library or an achievement has been unclocked
+    //Receive the user information from the client after a command on the menuStart() of the Client
     private User updateUserInfo() throws IOException
     {
         Scanner from_client = new Scanner(assigned_socket.getInputStream());
@@ -230,7 +233,7 @@ public class ClientManager implements Runnable
         return u;
     }
 
-    //Send a videogame to a user for add it on library (achievement locked)
+    //Send a videogame found in the server to a user for add it on library (achievement locked)
     private void sendVideogameToClient(Videogame videogame) throws IOException
     {
         var to_client = new PrintWriter(assigned_socket.getOutputStream());

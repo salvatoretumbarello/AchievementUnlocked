@@ -13,6 +13,11 @@ public class Game
         this.rating = rating;
     }
 
+    public Game(String title)
+    {
+        this.title = title;
+    }
+
     public String getTitle()
     {
         return title;
@@ -55,6 +60,6 @@ public class Game
     @Override
     public int hashCode()
     {
-        return Objects.hash(title);
+        return 1;
     }
 }
