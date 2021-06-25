@@ -61,10 +61,10 @@ public class Platform
     @Override
     public String toString()
     {
-        return "Platform{" +
-                "name='" + name + '\'' +
-                ", company='" + company + '\'' +
-                ", releaseYear=" + releaseYear +
-                '}';
+        StringBuilder msg = new StringBuilder();
+        msg.append("\n\nPLATFORM: "+name);
+        msg.append("\nCompany: "+company);
+        msg.append("\nRelease year: "+releaseYear);
+        return msg.toString();
     }
 }

@@ -46,10 +46,11 @@ public class Person
     @Override
     public String toString()
     {
-        return "Person{" +
-                "name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+        StringBuilder msg = new StringBuilder();
+        msg.append("\nINFORMATION");
+        msg.append("\nName: " + name);
+        msg.append("\nSurname: " + surname);
+        msg.append("\nemail: " + email);
+        return msg.toString();
     }
 }

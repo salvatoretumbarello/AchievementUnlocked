@@ -39,15 +39,18 @@ public class Videogame extends Game
     }
 
     @Override
-    public String toString() {
-        return "Videogame{" +
-                "title='" + this.getTitle() + '\'' +
-                ", description='" + this.getDescription() + '\'' +
-                ", rating=" + this.getRating() +
-                ", softwareHouse='" + softwareHouse + '\'' +
-                ", platformList=" + platformList +
-                ", achievements=" + achievements +
-                '}';
+    public String toString()
+    {
+        StringBuilder msg = new StringBuilder();
+        msg.append("\n\n\nVIDEOGAME: "+getTitle());
+        msg.append("\nDescription: "+getDescription());
+        msg.append("\nRating: "+getRating());
+        msg.append("\nSoftware House: "+softwareHouse);
+        for (Platform p : platformList)
+            msg.append(p);
+        for (Achievement a : achievements)
+            msg.append(a);
+        return msg.toString();
     }
 
     public void addPlatform(Platform platform)

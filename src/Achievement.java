@@ -71,11 +71,13 @@ public class Achievement
     @Override
     public String toString()
     {
-        return "Achievement{" +
-                "name='" + name + '\'' +
-                ", videogame_name='" + videogame_name + '\'' +
-                ", description='" + description + '\'' +
-                ", unlocked=" + unlocked +
-                '}';
+        StringBuilder msg = new StringBuilder();
+        msg.append("\n\nACHIEVEMENT: "+name);
+        msg.append("\nDescription: "+description);
+        if (isUnlocked())
+            msg.append("\n[Unlocked] ");
+        else
+            msg.append("\n[Locked] ");
+        return msg.toString();
     }
 }

@@ -59,12 +59,13 @@ public class User
 
     @Override
     public String toString() {
-        return "User{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", information=" + information +
-                ", library=" + library +
-                '}';
+        StringBuilder msg = new StringBuilder();
+        msg.append("\n\nUSER");
+        msg.append("\nUsername: "+username);
+        msg.append("\nPassword: "+password);
+        msg.append("\n");
+        msg.append(information.toString());
+        return msg.toString();
     }
 
     public void addVideogame(Videogame videogame)
