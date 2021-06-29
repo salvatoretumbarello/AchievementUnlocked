@@ -160,10 +160,12 @@ public class Client
                 System.out.println("_____ACHIEVEMENT_UNLOCKED_____");
                 System.out.println("\nWelcome " + current_user.getUsername() + "!!\n");
                 System.out.println("1) Add a new videogame to your library");
-                System.out.println("2) Unlock achievements");
-                System.out.println("3) Show your library");
-                System.out.println("4) Show community stats");
-                System.out.println("5) Save changes");
+                System.out.println("2) Remove a videogame from your library");
+                System.out.println("3) Unlock achievements");
+                System.out.println("4) Show your library");
+                System.out.println("5) Show your stats");
+                System.out.println("6) Show community stats");
+                System.out.println("7) Save changes");
                 System.out.println("0) Log out");
                 System.out.println(">>>");
                 choice = from_user.nextInt();
@@ -201,11 +203,31 @@ public class Client
                         }
                         break;
 
-                    //UNLOCK ACHIEVEMENTS
+                    //DELETE VIDEOGAME FROM LIBRARY
                     case 2:
                         System.out.println();
+                        System.out.println("Your game: ");
+                        printVideogames();
+                        System.out.println();
+                        System.out.println("Insert the game to remove: ");
+                        String name = from_user.nextLine();
+                        Videogame v = current_user.findVideogame(name);
+                        if (v == null)
+                        {
+                            System.out.println("\nGame not found in your library!\n");
+                        }
+                        else
+                        {
+                            current_user.removeVideogame(v);
+                            System.out.println("\n"+name+" removed!\n");
+                        }
+                        break;
+
+                    //UNLOCK ACHIEVEMENTS
+                    case 3:
+                        System.out.println();
                         System.out.println("Videogame on your library: ");
-                        PrintVideogames();
+                        printVideogames();
                         System.out.println();
                         System.out.println("Insert Videogame title: ");
                         title = from_user.nextLine();
@@ -246,14 +268,21 @@ public class Client
                         break;
 
                     //SHOW LIBRARY
-                    case 3:
+                    case 4:
                         System.out.println();
                         System.out.println(current_user.printLibrary());
                         System.out.println();
                         break;
 
-                    //SHOW REPORT
-                    case 4:
+                    //SHOW CURRENT USER STATS
+                    case 5:
+                        System.out.println();
+                        menuPrintLocalStats();
+                        System.out.println();
+                        break;
+
+                    //SHOW COMMUNITY STATS
+                    case 6:
                         System.out.println();
                         to_server.println("GET_STATS");
                         to_server.flush();
@@ -263,7 +292,7 @@ public class Client
                         break;
 
                     //SAVE CHANGES
-                    case 5:
+                    case 7:
                         to_server.println("UPDATE_INFORMATION");
                         to_server.flush();
                         updateUserInfo();
@@ -534,7 +563,7 @@ public class Client
         return vg;
     }
 
-    private void PrintVideogames()
+    private void printVideogames()
     {
         for(Videogame vg :current_user.getLibrary())
             System.out.println(vg.getTitle());
@@ -578,6 +607,29 @@ public class Client
             archive.add(as);
         }
         return archive;
+    }
+
+    //Print statistic data about the current user
+    public void menuPrintLocalStats()
+    {
+        for(Videogame vg : current_user.getLibrary())
+        {
+            int ac_count = 0; int ac_unlocked_count = 0;
+            double percentage;
+
+            for (Achievement ac : vg.getAchievements())
+            {
+                ac_count++;
+                if (ac.isUnlocked())
+                    ac_unlocked_count++;
+            }
+            percentage = 100 * ((double) ac_unlocked_count) / ((double) ac_count);
+            System.out.println("VIDEOGAME: "+vg.getTitle());
+            System.out.println("Unlocked achievements: "+ac_unlocked_count);
+            System.out.println("Total achievements: "+ac_count);
+            System.out.println(percentage+" % completed");
+            System.out.println();
+        }
     }
 
     private void printAchievementsStats(StatsArchive statsArchive)

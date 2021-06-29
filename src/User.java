@@ -80,10 +80,15 @@ public class User
                 information.getEmail();
     }
 
+    //It prints also the stats about the user
     public String printLibrary()
     {
         StringBuilder str = new StringBuilder();
-        for (Videogame tmp : library) str.append(tmp);
+        for (Videogame tmp : library)
+        {
+            str.append(tmp);
+
+        }
         return str.toString();
     }
 
@@ -116,5 +121,10 @@ public class User
                 tmp.getAchievements().remove(ac);
                 tmp.getAchievements().add(ac);
             }
+    }
+
+    public void removeVideogame(Videogame videogame)
+    {
+        library.remove(videogame);
     }
 }
