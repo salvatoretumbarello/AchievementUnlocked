@@ -54,18 +54,16 @@ public class Achievement
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Achievement that = (Achievement) o;
-        return name.equals(that.name) && description.equals(that.description);
+        return Objects.equals(name, that.name) && Objects.equals(videogame_name, that.videogame_name);
     }
 
     @Override
-    public int hashCode()
-    {
-        return Objects.hash(name, description);
+    public int hashCode() {
+        return Objects.hash(name, videogame_name);
     }
 
     @Override
@@ -73,6 +71,7 @@ public class Achievement
     {
         StringBuilder msg = new StringBuilder();
         msg.append("\n\nACHIEVEMENT: "+name);
+        msg.append("\nVideogame title: "+videogame_name);
         msg.append("\nDescription: "+description);
         if (isUnlocked())
             msg.append("\n[Unlocked] ");

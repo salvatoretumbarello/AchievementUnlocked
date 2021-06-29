@@ -151,7 +151,7 @@ public class Client
             {
                 int choice;
                 System.out.println();
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     Thread.sleep(1000);
                     System.out.print(". ");
@@ -162,7 +162,7 @@ public class Client
                 System.out.println("1) Add a new videogame to your library");
                 System.out.println("2) Unlock achievements");
                 System.out.println("3) Show your library");
-                System.out.println("4) Show report");
+                System.out.println("4) Show community stats");
                 System.out.println("5) Save changes");
                 System.out.println("0) Log out");
                 System.out.println(">>>");
@@ -193,7 +193,7 @@ public class Client
                             System.out.println();
                             Videogame vg = menuAddVideogame(current_user, title);
                             current_user.addVideogame(vg);
-                            System.out.println("Added videogame:\n"+vg);
+                            System.out.println("\n\nAdded videogame:"+vg);
                         }
                         else
                         {
@@ -254,6 +254,12 @@ public class Client
 
                     //SHOW REPORT
                     case 4:
+                        System.out.println();
+                        to_server.println("GET_STATS");
+                        to_server.flush();
+                        StatsArchive user_stats = loadStatsFromServer();
+                        printAchievementsStats(user_stats);
+                        System.out.println();
                         break;
 
                     //SAVE CHANGES
@@ -261,8 +267,8 @@ public class Client
                         to_server.println("UPDATE_INFORMATION");
                         to_server.flush();
                         updateUserInfo();
-                        System.out.println("Changes saved..\n");
-                        System.out.println(current_user);
+                        System.out.println();
+                        System.out.println("Changes saved.\n");
                         break;
 
                     //LOG OUT
@@ -309,7 +315,6 @@ public class Client
     }
 
     //Load all information of the user that is logged in
-
     private User loadUserFromServer() throws IOException
     {
         Scanner from_server = new Scanner(client_socket.getInputStream());
@@ -365,6 +370,7 @@ public class Client
         }
         return u;
     }
+
     private String menuLogin()
     {
         StringBuilder msg = new StringBuilder();
@@ -547,4 +553,44 @@ public class Client
 
     }
 
+    //load statistic data from the server
+    private StatsArchive loadStatsFromServer() throws IOException
+    {
+        Scanner from_server = new Scanner(client_socket.getInputStream());
+
+        String[] info = new String[3]; boolean b_info;
+        int[] i_info = new int[2]; double d_info;
+        Achievement ac; AchievementStats as;
+        StatsArchive archive = new StatsArchive();
+
+        while (true)
+        {
+            info[0] = from_server.nextLine(); //name or message that ends the stream
+            if (info[0].equals("END_ACHIEVEMENTS")) break;
+            info[1] = from_server.nextLine(); //name of the videogame
+            info[2] = from_server.nextLine(); //description
+            i_info[0] = Integer.parseInt(from_server.nextLine()); //n_unlocked
+            i_info[1] = Integer.parseInt(from_server.nextLine()); //n_total
+            d_info = Double.parseDouble(from_server.nextLine()); //unlock_percentage
+
+            ac = new Achievement(info[0], info[1],false, info[2]);
+            as = new AchievementStats(ac, i_info[0], i_info[1], d_info);
+            archive.add(as);
+        }
+        return archive;
+    }
+
+    private void printAchievementsStats(StatsArchive statsArchive)
+    {
+        for (AchievementStats as : statsArchive.getArchive())
+        {
+            System.out.println("ACHIEVEMENT: "+as.getAchievement().getName());
+            System.out.println("VIDEOGAME: "+as.getAchievement().getVideogame_name());
+            System.out.println("Unlocked by: "+as.getN_unlocked()+" users");
+            System.out.println("Videogame own by: "+as.getN_total()+" users");
+            System.out.println("Unlock percentage: "+as.getUnlock_percentage()*100+" %");
+            System.out.println(as.getDifficulty());
+            System.out.println();
+        }
+    }
 }

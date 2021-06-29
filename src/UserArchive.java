@@ -3,7 +3,12 @@ import java.util.HashSet;
 
 public class UserArchive
 {
-    ArrayList<User> users = new ArrayList<>();
+    private ArrayList<User> users = new ArrayList<>();
+
+    public ArrayList<User> getUsers()
+    {
+        return users;
+    }
 
     public void add(User user)
     {

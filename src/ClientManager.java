@@ -9,11 +9,13 @@ public class ClientManager implements Runnable
     Socket assigned_socket;
     UserArchive archive;
     User current_user;
+    StatsArchive archive_stats;
 
-    public ClientManager(Socket client_socket, UserArchive archive)
+    public ClientManager(Socket client_socket, UserArchive archive, StatsArchive archive_stats)
     {
         this.assigned_socket = client_socket;
         this.archive = archive;
+        this.archive_stats = archive_stats;
     }
 
     @Override
@@ -54,7 +56,7 @@ public class ClientManager implements Runnable
                         {
                             to_client.println("LOGGED_IN");
                             to_client.flush();
-                            System.out.println("Sending user informations: " + current_user);
+                            System.out.println("Sending user information: " + current_user);
 
                             sendUserToClient(current_user);
 
@@ -107,11 +109,16 @@ public class ClientManager implements Runnable
                         }
                         break;
 
+                    case "GET_STATS":
+                        System.out.println("Sending Stats to client...");
+                        sendStatsArchiveToClient();
+                        System.out.println("Sending complete.");
+                        break;
+
                     case "UPDATE_INFORMATION":
                         current_user = updateUserInfo();
                         archive.updateUser(current_user);
-                        System.out.println("Updated: ");
-                        System.out.println(current_user);
+                        System.out.println("Updated");
                         break;
 
                     case "QUIT":
@@ -183,6 +190,7 @@ public class ClientManager implements Runnable
 
         String[] info = new String[5]; int i_info; boolean b_info;
         User u; Person p; Videogame v; Achievement a; Platform pf;
+        AchievementStats as;
 
         info[0] = from_client.nextLine(); //username
         info[1] = from_client.nextLine(); //password
@@ -227,7 +235,8 @@ public class ClientManager implements Runnable
 
                 a = new Achievement(info[0], info[1], b_info, info[2]);
                 v.addAchievement(a);
-
+                as = new AchievementStats(a);
+                archive_stats.updateStats(as);
             }
         }
         return u;
@@ -256,6 +265,36 @@ public class ClientManager implements Runnable
             to_client.println(a.getName());
             to_client.println(a.getVideogame_name());
             to_client.println(a.getDescription());
+        }
+        to_client.println("END_ACHIEVEMENTS");
+        to_client.flush();
+    }
+
+    //Send a StatsArchive to the client, this archive contains statistic data of the games in the library of the user
+    private void sendStatsArchiveToClient() throws IOException
+    {
+        var to_client = new PrintWriter(assigned_socket.getOutputStream());
+
+        Achievement ac;
+
+        for (AchievementStats as : archive_stats.getArchive())
+        {
+            for (Videogame vg : current_user.getLibrary())
+            {
+                ac = as.getAchievement();
+                if (vg.getTitle().equalsIgnoreCase(ac.getVideogame_name()))
+                {
+                    to_client.println(ac.getName());
+                    to_client.println(ac.getVideogame_name());
+                    to_client.println(ac.getDescription());
+                    to_client.println(as.getN_unlocked());
+                    System.out.println(as.getN_unlocked());
+                    to_client.println(as.getN_total());
+                    System.out.println(as.getN_total());
+                    to_client.println(as.getUnlock_percentage());
+                    System.out.println(as.getUnlock_percentage());
+                }
+            }
         }
         to_client.println("END_ACHIEVEMENTS");
         to_client.flush();
