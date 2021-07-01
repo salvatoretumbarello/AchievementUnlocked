@@ -154,7 +154,7 @@ public class Client
                 for (int i = 0; i < 3; i++)
                 {
                     Thread.sleep(1000);
-                    System.out.print(". ");
+                    System.out.print(" . ");
                 }
                 System.out.println("\n");
                 System.out.println("_____ACHIEVEMENT_UNLOCKED_____");
@@ -186,6 +186,11 @@ public class Client
                             System.out.println("Videogame found on our server, loading into your library...");
                             Videogame vg = loadVideogameFromServer();
                             current_user.addVideogame(vg);
+                            for (int i = 0; i < 3; i++)
+                            {
+                                Thread.sleep(1000);
+                                System.out.print(" . ");
+                            }
                             System.out.println("Added videogame:\n"+vg);
                         }
                         else if (msg_received.equals("VIDEOGAME_NOT_FOUND"))
@@ -193,6 +198,11 @@ public class Client
                             System.out.println("Videogame not found on server...");
                             System.out.println("Please add all information about it");
                             System.out.println();
+                            for (int i = 0; i < 3; i++)
+                            {
+                                Thread.sleep(1000);
+                                System.out.print(" . ");
+                            }
                             Videogame vg = menuAddVideogame(current_user, title);
                             current_user.addVideogame(vg);
                             System.out.println("\n\nAdded videogame:"+vg);

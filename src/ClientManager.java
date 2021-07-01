@@ -56,11 +56,8 @@ public class ClientManager implements Runnable
                         {
                             to_client.println("LOGGED_IN");
                             to_client.flush();
-                            System.out.println("Sending user information: " + current_user);
-
                             sendUserToClient(current_user);
-
-                            System.out.println("Sending complete");
+                            System.out.println(current_user.getUsername()+"'s user information sent to client " + assigned_socket.getRemoteSocketAddress());
                         }
                         break;
 
@@ -82,6 +79,7 @@ public class ClientManager implements Runnable
 
                             to_client.println("SIGNED_UP");
                             to_client.flush();
+                            System.out.println("New user: "+user_signup.getUsername()+" registered from client " + assigned_socket.getRemoteSocketAddress());
                         }
                         else
                         {
@@ -98,27 +96,25 @@ public class ClientManager implements Runnable
                         {
                             to_client.println("VIDEOGAME_NOT_FOUND");
                             to_client.flush();
-                            System.out.println(title+" not found.");
                         }
                         else
                         {
                             to_client.println("VIDEOGAME_FOUND");
                             to_client.flush();
                             sendVideogameToClient(vg_tmp);
-                            System.out.println(title+" found.");
+                            System.out.println(title+" found. "+vg_tmp.getTitle()+" sent to client " + assigned_socket.getRemoteSocketAddress());
                         }
                         break;
 
                     case "GET_STATS":
-                        System.out.println("Sending Stats to client...");
                         sendStatsArchiveToClient();
-                        System.out.println("Sending complete.");
+                        System.out.println("Stats about "+current_user.getUsername()+" sent to client "+ assigned_socket.getRemoteSocketAddress());
                         break;
 
                     case "UPDATE_INFORMATION":
                         current_user = updateUserInfo();
                         archive.updateUser(current_user);
-                        System.out.println("Updated");
+                        System.out.println("Updated information about "+current_user.getUsername()+" from client "+ assigned_socket.getRemoteSocketAddress());
                         break;
 
                     case "QUIT":
@@ -128,7 +124,7 @@ public class ClientManager implements Runnable
                         break;
 
                     default:
-                        System.out.println("Not valid command received " + command + "");
+                        System.out.println("Not valid command received " + command +" from client "+ assigned_socket.getRemoteSocketAddress());
                         break;
                 }
             }
@@ -288,11 +284,8 @@ public class ClientManager implements Runnable
                     to_client.println(ac.getVideogame_name());
                     to_client.println(ac.getDescription());
                     to_client.println(as.getN_unlocked());
-                    System.out.println(as.getN_unlocked());
                     to_client.println(as.getN_total());
-                    System.out.println(as.getN_total());
                     to_client.println(as.getUnlock_percentage());
-                    System.out.println(as.getUnlock_percentage());
                 }
             }
         }

@@ -18,13 +18,11 @@ public class TestServer
         if  (args.length == 1)
         {
             System.out.println("Starting server on port "+args[0]);
-
             Server my_server = new Server(Integer.parseInt(args[0]));
             my_server.start();
         }
         else if (args.length == 2)
         {
-
         }
         else
         {
