@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 
-public class User
+public class User implements Serializable
 {
     private String username;
     private String password;

@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class Videogame extends Game
+public class Videogame extends Game implements Serializable
 {
     private String softwareHouse;
     private ArrayList<Platform> platformList = new ArrayList<>();

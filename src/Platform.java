@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Platform
+public class Platform implements Serializable
 {
     private String name;
     private String company;

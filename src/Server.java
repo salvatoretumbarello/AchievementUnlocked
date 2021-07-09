@@ -8,6 +8,8 @@ public class Server
     Socket client_socket;
     private int port;
 
+    private StatusSaver status_saver;
+
     private UserArchive archive;
     private StatsArchive archive_stats;
 
@@ -33,6 +35,9 @@ public class Server
         try
         {
             server_socket = new ServerSocket(port);
+            status_saver = new StatusSaver(archive, archive_stats);
+            Thread s = new Thread(status_saver);
+            s.start();
 
             while (true)
             {

@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class UserArchive
+public class UserArchive implements Serializable
 {
     private ArrayList<User> users = new ArrayList<>();
 

@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Achievement
+public class Achievement implements Serializable
 {
     private String name;
     private String videogame_name;

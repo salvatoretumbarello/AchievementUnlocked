@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.Objects;
 
-public class AchievementStats
+public class AchievementStats implements Serializable
 {
     private Achievement achievement;
     private int n_unlocked; //Number of user that unlocked the achievement

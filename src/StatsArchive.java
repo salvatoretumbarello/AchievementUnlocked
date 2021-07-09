@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.HashSet;
 
-public class StatsArchive
+public class StatsArchive implements Serializable
 {
     private HashSet<AchievementStats> archive = new HashSet<>();
 
