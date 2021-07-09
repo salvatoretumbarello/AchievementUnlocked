@@ -180,7 +180,7 @@ public class ClientManager implements Runnable
 
 
     //Receive the user information from the client after a command on the menuStart() of the Client
-    private User updateUserInfo() throws IOException
+    private synchronized User updateUserInfo() throws IOException
     {
         Scanner from_client = new Scanner(assigned_socket.getInputStream());
 
